@@ -35,6 +35,7 @@ public class UserController {
     @RequestMapping(value="save")
     public String saveUser(@ModelAttribute User user, BindingResult bindingResult,
                                Model model) {
+        //表单验证
         UserValidator userValidator = new UserValidator();
         userValidator.validate(user, bindingResult);
 
@@ -45,8 +46,6 @@ public class UserController {
             return "/user/UserForm";
         }
 
-        // save product here
-        model.addAttribute("org.springframework.validation.BindingResult.user",new BindException(bindingResult));
         return "/user/UserInfo";
     }
 
