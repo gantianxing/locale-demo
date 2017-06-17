@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="GBK"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd"
+       default-autowire="byName">
+
+    <!-- 加载属性配置文件，主要为spring bean实例化 提供配置化支持-->
+    <bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:spring-locale.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--导入其他所需的配置文件 -->
+    <!-- <import resource="spring/*.xml" /> 配置文件尽量根据模块进行拆分-->
+</beans>

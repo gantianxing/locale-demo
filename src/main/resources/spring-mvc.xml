@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="GBK"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd
+					 http://www.springframework.org/schema/context
+                     http://www.springframework.org/schema/context/spring-context.xsd
+                     http://www.springframework.org/schema/mvc
+                     http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+       default-autowire="byName">
+
+    <mvc:annotation-driven />
+    <mvc:default-servlet-handler />
+    <context:component-scan base-package="com.sky.locale.demo.controller" >
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <mvc:resources mapping="/css/**" location="/css/" />
+    <mvc:resources mapping="/*.html" location="/" />
+
+    <!-- Freemarker属性配置-->
+    <bean id="freemarkerConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location" value="classpath:freemarker.properties"/>
+    </bean>
+
+    <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape" />
+
+    <!-- Freemarker配置-->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="freemarkerSettings" ref="freemarkerConfiguration"/>
+        <property name="templateLoaderPath">
+            <value>/WEB-INF/view/</value>
+        </property>
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="xml_escape" value-ref="fmXmlEscape" />
+            </map>
+        </property>
+    </bean>
+
+    <!-- 配置freeMarker视图解析器 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+        <property name="contentType" value="text/html; charset=utf-8"/>
+        <property name="cache" value="false"/>
+        <property name = "suffix" value = ".ftl"></property>
+        <property name="exposeRequestAttributes" value="true" />
+        <property name="exposeSessionAttributes" value="true" />
+        <property name="exposeSpringMacroHelpers" value="true" />
+        <property name="requestContextAttribute" value="request"/>
+    </bean>
+
+    <!-- 图片上传 处理-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8" />
+        <property name="maxUploadSize" value="10485760000" />
+        <property name="maxInMemorySize" value="40960" />
+    </bean>
+
+    <!-- 国际化资源文件 -->
+    <bean id="messageSource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames" >
+            <list>
+                <value>/WEB-INF/resource/usermsg</value>
+                <value>/WEB-INF/resource/userlabels</value>
+            </list>
+        </property>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+    <!-- 本地化解析配置,采用cookie方式 -->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieName" value="clientlanguage"/>
+        <property name="cookieMaxAge" value="94608000"/>
+        <property name="defaultLocale" value="en" />
+    </bean>
+
+    <mvc:annotation-driven conversion-service="formatService" />
+
+    <!-- formatter转换配置 -->
+    <bean id="formatService"
+          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="formatters">
+            <set>
+                <!-- 使用SpringMVC 自带的formatters处理 日期、数字国际化 -->
+                <!--<bean class="org.springframework.format.number.CurrencyStyleFormatter">
+                </bean>
+                <bean class="org.springframework.format.number.NumberStyleFormatter">
+                </bean>
+                <bean class="org.springframework.format.number.PercentStyleFormatter">
+                </bean>
+                <bean class="org.springframework.format.datetime.DateFormatter">
+                </bean> -->
+
+                <bean class="com.sky.locale.demo.formatter.MyDateFormatter" />
+                <bean class="com.sky.locale.demo.formatter.MyCurrencyFormatter" />
+            </set>
+        </property>
+    </bean>
+
+</beans>
